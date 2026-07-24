@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "timestamp": "2026-07-24T09:24:19",
+    "mode": "ddp",
+    "device": "cuda",
+    "backend": "nccl",
+    "world_size": 2,
+    "torch": "2.13.0+cu130",
+    "nccl": "2.29.7",
+    "gpu_topology": "\t\u001b[4mGPU0\tGPU1\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nFailed to run topology matrix\n\n",
+    "steps": 30,
+    "warmup": 5,
+    "repeats": 5,
+    "global_batch_size": 8,
+    "seq_len": 32,
+    "tokens_per_step": 256
+  },
+  "per_rank": [
+    {
+      "rank": 0,
+      "mean_ms": 8.3885,
+      "p50_ms": 8.189,
+      "p90_ms": 9.198,
+      "max_ms": 10.2671,
+      "repeat_means_ms": [
+        8.6071,
+        8.2741,
+        8.2269,
+        8.6066,
+        8.2279
+      ],
+      "repeat_spread_ms": 0.3802,
+      "peak_mem_mb": 61.73
+    },
+    {
+      "rank": 1,
+      "mean_ms": 8.4571,
+      "p50_ms": 8.3507,
+      "p90_ms": 9.2776,
+      "max_ms": 10.9988,
+      "repeat_means_ms": [
+        8.5384,
+        8.3796,
+        8.3223,
+        8.6876,
+        8.3576
+      ],
+      "repeat_spread_ms": 0.3653,
+      "peak_mem_mb": 61.73
+    }
+  ],
+  "tokens_per_s": 30270.4
+}

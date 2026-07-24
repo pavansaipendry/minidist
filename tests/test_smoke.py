@@ -28,7 +28,12 @@ def _failing_worker(rank: int, cfg: DistConfig) -> None:
 
 def test_worker_failure_propagates(tmp_path: Path) -> None:
     cfg = _env.make_dist_cfg(2, tmp_path)
-    with pytest.raises(Exception, match="intentional failure"):
+    # Which rank's error surfaces is a scheduling race: mp.spawn reports the
+    # FIRST process it sees die. On fast machines that's rank 1's original
+    # exception; on slow runners rank 0's barrier dies first with a
+    # connection-reset when rank 1's teardown closes its sockets. Both prove
+    # the property under test — the harness fails loudly instead of hanging.
+    with pytest.raises(Exception, match="intentional failure|Connection closed by peer"):
         launch(_failing_worker, cfg)
 
 

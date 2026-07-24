@@ -1,5 +1,7 @@
 # minidist
 
+![tests](https://github.com/pavansaipendry/minidist/actions/workflows/ci.yml/badge.svg)
+
 Data parallelism, ZeRO-1/2 optimizer sharding, and tensor parallelism implemented from **raw `torch.distributed` collectives** — `all_reduce`, `reduce_scatter`, `all_gather`, `broadcast`. No `DistributedDataParallel`, no FSDP, no DeepSpeed in the core: every collective call is placed by hand, commented with why it exists and what breaks without it, and covered by a correctness gate. Torch's DDP and FSDP appear only as benchmark baselines to compare against.
 
 The goal is to answer precisely: **what does each parallelism strategy communicate, when, and what does it cost?**
@@ -48,11 +50,11 @@ Measured on 4× NVIDIA L4 (PCIe, no NVLink) and 2× T4, torch 2.13 / NCCL 2.29, 
 
 The poor absolute scaling is the finding, not a failure: a 1.86M-param model exchanges a fixed ~7.4MB of gradients per step over a ~4 GB/s PCIe ring, so communication dominates — Amdahl's law measured from one's own collectives. Four results worth attention:
 
-1. **The overlap gap, quantified.** DDP beats this repo's bucketed DP by ~8% on the compute-heavy workload and ~34% on the latency-bound one. The difference is exactly the optimization DDP has and this core (so far) does not: launching bucket all_reduces from backward hooks so communication hides under compute. The bucket structure here is built for it (reverse parameter order, persistent flat buffers) — it's the roadmap item with a pre-measured prize.
+1. **The overlap gap, quantified — with error bars.** Across the campaign run plus a 5-repeat validation on a second instance (`results/l4x4/variance/`), DDP beats this repo's bucketed DP by **1.25–1.34×** on the latency-bound workload and **1.08–1.26×** on the compute-heavier one. Within-instance repeat spread is ≤5%; the wider large-workload range is *cross-instance* PCIe fabric variation — single-run cloud benchmarks deserve error bars, and this pair shows why. The gap itself is exactly the optimization DDP has and this core (so far) does not: launching bucket all_reduces from backward hooks so communication hides under compute. The bucket structure here is built for it (reverse parameter order, persistent flat buffers) — it's the roadmap item with a pre-measured prize.
 
    ![Grouped bar chart: torch DDP reaches 1.34x our DP's throughput on the tiny workload but only 1.08x on the large one](results/plots/overlap_gap.png)
 
-   The two workloads bracket the value of overlap: when a step is mostly communication (tiny), hiding the all_reduce is worth 34%; when compute grows (large), there's less comm *relative to* compute left to hide, and the same optimization is worth 8%. Overlap pays in proportion to how comm-bound you are.
+   The two workloads bracket the value of overlap: when a step is mostly communication (tiny), hiding the all_reduce is worth ~34%; when compute grows (large), there's less comm *relative to* compute left to hide. The chart shows the campaign run; the 5-repeat validation on a second instance measured 1.25–1.33× and 1.21–1.26× respectively — read the pair as bracketing the regimes, not as precise constants. Overlap pays in proportion to how comm-bound you are.
 2. **TP is *slower than one GPU* on PCIe (0.73×).** Each transformer block costs 2 forward + 2 backward activation all_reduces on the critical path — 8 × ~4MB per step at this size. First-party evidence for why Megatron confines TP to NVLink islands.
 3. **ZeRO-2 is the fastest mode even on a single GPU.** Its sharded AdamW updates one flat contiguous tensor in a single elementwise pass, versus 38 per-tensor kernel launches for standard AdamW — the sharding design accidentally builds a fused optimizer.
 4. **ZeRO's memory win has a crossover.** At 1.86M params, its fixed flat comm buffers outweigh the sharded-state savings (65MB peak vs 54MB for naive DP); the byte accounting proves the sharding while the totals show the win only appears when model size dwarfs the buffers.

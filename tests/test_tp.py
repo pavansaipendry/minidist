@@ -18,13 +18,18 @@ import torch
 import torch.distributed as dist
 
 import _env
-from minidist.config import DistConfig, ModelConfig
+from minidist.baseline import build_optimizer, compute_loss, train_baseline
+from minidist.config import DistConfig, ModelConfig, TrainConfig
+from minidist.data import MarkovDataset
 from minidist.launcher import launch
 from minidist.model import MLP, CausalSelfAttention, TinyTransformer
 from minidist.parallel.tp import TPCausalSelfAttention, TPMLP, TPTransformer
 
 MODEL_CFG = ModelConfig()
 WORLD_SIZES = _env.WORLD_SIZES
+# Measured max per-step drift of TP training vs baseline: ~2.4e-6 over 20 steps
+# (per-block g-reduce summation order). Same margin discipline as the DP gate.
+TP_TRAIN_ATOL = 5e-5
 
 
 def _replicated_input(shape: tuple[int, ...], seed: int, device: torch.device) -> torch.Tensor:
@@ -134,3 +139,45 @@ def test_tp_attention_matches_unsharded(world_size: int, tmp_path: Path) -> None
 def test_tp_transformer_matches_unsharded_end_to_end(world_size: int, tmp_path: Path) -> None:
     cfg = _env.make_dist_cfg(world_size, tmp_path / "logs")
     launch(partial(_e2e_gate_worker, model_cfg=MODEL_CFG), cfg)
+
+
+def _tp_training_gate_worker(
+    rank: int, cfg: DistConfig, *, model_cfg: ModelConfig, train_cfg: TrainConfig
+) -> None:
+    """TP TRAINING must reproduce the single-process loss trajectory.
+
+    This closes the loop the per-layer gates argue but don't prove: sharded
+    params update locally, replicated params (LN, embeddings, biases) receive
+    identical gradients on every rank and so stay in sync under a plain local
+    AdamW — no gradient collective exists in TP, and this gate is what verifies
+    none is needed."""
+    device = cfg.device(rank)
+    # Every rank computes the identical reference in-process (deterministic).
+    ref_losses = train_baseline(model_cfg, train_cfg, device)
+
+    torch.manual_seed(train_cfg.seed)
+    ref = TinyTransformer(model_cfg)
+    tp = TPTransformer(model_cfg)
+    tp.load_from_unsharded(ref)
+    tp = tp.to(device)
+    optimizer = build_optimizer(tp, train_cfg)
+    dataset = MarkovDataset(model_cfg.vocab_size, train_cfg.seq_len, train_cfg.data_seed)
+
+    for step in range(train_cfg.steps):
+        # TP replicates data: the FULL batch on every rank, same as the baseline.
+        inputs, targets = dataset.global_batch(step, train_cfg.global_batch_size)
+        loss = compute_loss(tp, inputs.to(device), targets.to(device))
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        diff = abs(loss.item() - ref_losses[step])
+        assert diff < TP_TRAIN_ATOL, (
+            f"step {step}: tp={loss.item():.8f} ref={ref_losses[step]:.8f} diff={diff:.2e}"
+        )
+
+
+@pytest.mark.parametrize("world_size", WORLD_SIZES)
+def test_tp_training_matches_baseline(world_size: int, tmp_path: Path) -> None:
+    cfg = _env.make_dist_cfg(world_size, tmp_path / "logs")
+    gate_cfg = TrainConfig(steps=20)
+    launch(partial(_tp_training_gate_worker, model_cfg=MODEL_CFG, train_cfg=gate_cfg), cfg)

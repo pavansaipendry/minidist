@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import time
 from functools import partial
@@ -48,6 +49,18 @@ def _percentile(sorted_vals: list[float], q: float) -> float:
     return sorted_vals[idx]
 
 
+def gpu_topology() -> str | None:
+    """The interconnect matrix (NVLink/PCIe/SHM) the numbers were measured on —
+    recorded so the fabric is documented, not inferred from bandwidth."""
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "topo", "-m"], capture_output=True, text=True, timeout=10
+        )
+        return out.stdout or None
+    except Exception:
+        return None
+
+
 def bench_worker(
     rank: int,
     cfg: DistConfig,
@@ -57,6 +70,7 @@ def bench_worker(
     train_cfg: TrainConfig,
     steps: int,
     warmup: int,
+    repeats: int,
     out_dir: Path,
 ) -> None:
     device = cfg.device(rank)
@@ -171,8 +185,7 @@ def bench_worker(
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
 
-    times_ms: list[float] = []
-    for i in range(total_iters):
+    def timed_step(i: int) -> float:
         # Barrier fences the step so all ranks time the same work window.
         dist.barrier()
         if device.type == "cuda":
@@ -181,17 +194,29 @@ def bench_worker(
         step_fn(i)
         if device.type == "cuda":
             torch.cuda.synchronize(device)
-        elapsed = (time.perf_counter() - t0) * 1e3
-        if i >= warmup:
-            times_ms.append(elapsed)
+        return (time.perf_counter() - t0) * 1e3
+
+    for i in range(warmup):
+        timed_step(i)
+    # Repeats re-time the same `steps` batches: identical work each pass, so the
+    # spread across repeat means is machine/fabric noise, not workload variance.
+    repeat_means: list[float] = []
+    times_ms: list[float] = []
+    for _ in range(repeats):
+        pass_times = [timed_step(warmup + i) for i in range(steps)]
+        times_ms.extend(pass_times)
+        repeat_means.append(sum(pass_times) / len(pass_times))
 
     ordered = sorted(times_ms)
+    mean = sum(times_ms) / len(times_ms)
     stats: dict = {
         "rank": rank,
-        "mean_ms": round(sum(times_ms) / len(times_ms), 4),
+        "mean_ms": round(mean, 4),
         "p50_ms": round(_percentile(ordered, 0.50), 4),
         "p90_ms": round(_percentile(ordered, 0.90), 4),
         "max_ms": round(ordered[-1], 4),
+        "repeat_means_ms": [round(m, 4) for m in repeat_means],
+        "repeat_spread_ms": round(max(repeat_means) - min(repeat_means), 4),
     }
     if device.type == "cuda":
         stats["peak_mem_mb"] = round(torch.cuda.max_memory_allocated(device) / 1e6, 2)
@@ -212,8 +237,13 @@ def bench_worker(
                 "backend": cfg.backend,
                 "world_size": world_size,
                 "torch": torch.__version__,
+                "nccl": ".".join(str(v) for v in torch.cuda.nccl.version())
+                if cfg.device_type == "cuda"
+                else None,
+                "gpu_topology": gpu_topology() if cfg.device_type == "cuda" else None,
                 "steps": steps,
                 "warmup": warmup,
+                "repeats": repeats,
                 "global_batch_size": train_cfg.global_batch_size,
                 "seq_len": train_cfg.seq_len,
                 "tokens_per_step": tokens_per_step,
@@ -237,6 +267,8 @@ def main() -> None:
     parser.add_argument("--modes", type=str, default="all", help=f"comma list of {MODES} or 'all'")
     parser.add_argument("--steps", type=int, default=30)
     parser.add_argument("--warmup", type=int, default=5)
+    parser.add_argument("--repeats", type=int, default=1,
+                        help="re-time the same steps N times; spread across repeats = noise")
     parser.add_argument("--global-batch", type=int, default=None)
     parser.add_argument("--seq-len", type=int, default=None)
     parser.add_argument("--out-dir", type=Path, default=REPO_ROOT / "results")
@@ -276,6 +308,7 @@ def main() -> None:
             train_cfg=train_cfg,
             steps=args.steps,
             warmup=args.warmup,
+            repeats=args.repeats,
             out_dir=args.out_dir,
         )
         launch(worker, cfg)

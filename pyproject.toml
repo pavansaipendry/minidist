@@ -18,9 +18,6 @@ where = ["src"]
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
-# Flag-proof import path: macOS occasionally stamps UF_HIDDEN on the editable
-# install's .pth file and Python >=3.12 silently skips hidden .pth files
-# (import minidist then fails). pytest inserting src/ itself sidesteps that.
-# If module runs (python -m minidist.*) break with ModuleNotFoundError, run:
-#   chflags nohidden .venv/lib/python3.12/site-packages/__editable__.minidist-0.1.0.pth
+# pytest inserts src/ itself so the suite never depends on the editable
+# install's .pth being processed.
 pythonpath = ["src"]

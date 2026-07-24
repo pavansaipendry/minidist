@@ -1,13 +1,16 @@
 {
   "meta": {
-    "timestamp": "2026-07-24T01:19:51",
+    "timestamp": "2026-07-24T04:22:52",
     "mode": "dp_bucketed",
     "device": "cpu",
     "backend": "gloo",
     "world_size": 2,
     "torch": "2.13.0",
-    "steps": 6,
+    "nccl": null,
+    "gpu_topology": null,
+    "steps": 5,
     "warmup": 2,
+    "repeats": 3,
     "global_batch_size": 8,
     "seq_len": 32,
     "tokens_per_step": 256
@@ -15,18 +18,30 @@
   "per_rank": [
     {
       "rank": 0,
-      "mean_ms": 26.6372,
-      "p50_ms": 24.669,
-      "p90_ms": 30.3385,
-      "max_ms": 30.743
+      "mean_ms": 23.4559,
+      "p50_ms": 23.3085,
+      "p90_ms": 25.6127,
+      "max_ms": 25.6181,
+      "repeat_means_ms": [
+        23.1005,
+        23.1924,
+        24.0749
+      ],
+      "repeat_spread_ms": 0.9743
     },
     {
       "rank": 1,
-      "mean_ms": 26.5013,
-      "p50_ms": 24.5653,
-      "p90_ms": 30.2701,
-      "max_ms": 30.2948
+      "mean_ms": 23.4409,
+      "p50_ms": 23.366,
+      "p90_ms": 25.2745,
+      "max_ms": 25.637,
+      "repeat_means_ms": [
+        23.1264,
+        23.147,
+        24.0494
+      ],
+      "repeat_spread_ms": 0.9231
     }
   ],
-  "tokens_per_s": 9610.6
+  "tokens_per_s": 10914.1
 }

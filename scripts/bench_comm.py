@@ -103,6 +103,17 @@ def bench_worker(
             )
 
     if rank == 0:
+        # Record the fabric, don't infer it from the numbers later.
+        topology = None
+        if cfg.device_type == "cuda":
+            try:
+                import subprocess
+
+                topology = subprocess.run(
+                    ["nvidia-smi", "topo", "-m"], capture_output=True, text=True, timeout=10
+                ).stdout or None
+            except Exception:
+                pass
         payload = {
             "meta": {
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -110,6 +121,10 @@ def bench_worker(
                 "backend": cfg.backend,
                 "world_size": world_size,
                 "torch": torch.__version__,
+                "nccl": ".".join(str(v) for v in torch.cuda.nccl.version())
+                if cfg.device_type == "cuda"
+                else None,
+                "gpu_topology": topology,
                 "gpus": [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())]
                 if cfg.device_type == "cuda"
                 else [],

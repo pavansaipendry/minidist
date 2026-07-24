@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import torch.multiprocessing
 
 import _env
 from minidist.launcher import launch
@@ -30,10 +31,11 @@ def test_worker_failure_propagates(tmp_path: Path) -> None:
     cfg = _env.make_dist_cfg(2, tmp_path)
     # Which rank's error surfaces is a scheduling race: mp.spawn reports the
     # FIRST process it sees die. On fast machines that's rank 1's original
-    # exception; on slow runners rank 0's barrier dies first with a
-    # connection-reset when rank 1's teardown closes its sockets. Both prove
-    # the property under test — the harness fails loudly instead of hanging.
-    with pytest.raises(Exception, match="intentional failure|Connection closed by peer"):
+    # exception; on slow runners rank 0's barrier dies first on a peer
+    # connection reset — whose exact gloo message varies by where the read was
+    # interrupted. The property under test is only that launch() RAISES a
+    # worker-failure error instead of hanging, so assert the type, not the text.
+    with pytest.raises(torch.multiprocessing.ProcessRaisedException):
         launch(_failing_worker, cfg)
 
 

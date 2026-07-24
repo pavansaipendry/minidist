@@ -33,6 +33,10 @@ Measured on 4× NVIDIA L4 (PCIe, no NVLink) and 2× T4, torch 2.13 / NCCL 2.29, 
 
 ### Strong scaling, fixed global batch (4× L4, 4096 tokens/step)
 
+![Strong scaling chart: speedup vs GPU count for our bucketed DP, torch DDP, our ZeRO-2 and our TP, all far below the ideal linear line; TP drops below 1.0](results/plots/scaling.png)
+
+**How to read it:** each line is one strategy's throughput normalized to its own single-GPU run, with the same total work at every point (strong scaling). Ideal is the dashed diagonal — 2 GPUs = 2×. Every line bending flat at ~1.2–1.3× says the same thing: with only ~7.4MB of gradients to exchange but a ~4 GB/s PCIe ring to exchange them on, communication — not compute — sets the step time for a model this small. TP is the extreme case: it communicates *activations inside every forward and backward* (eight all_reduces per step at this depth), so adding GPUs makes it slower than one.
+
 | mode | 1 GPU (tok/s) | 2 GPU | 4 GPU |
 |---|---|---|---|
 | DP (bucketed) | 398,560 | 513,135 (1.29×) | 505,330 (1.27×) |
@@ -45,11 +49,19 @@ Measured on 4× NVIDIA L4 (PCIe, no NVLink) and 2× T4, torch 2.13 / NCCL 2.29, 
 The poor absolute scaling is the finding, not a failure: a 1.86M-param model exchanges a fixed ~7.4MB of gradients per step over a ~4 GB/s PCIe ring, so communication dominates — Amdahl's law measured from one's own collectives. Four results worth attention:
 
 1. **The overlap gap, quantified.** DDP beats this repo's bucketed DP by ~8% on the compute-heavy workload and ~34% on the latency-bound one. The difference is exactly the optimization DDP has and this core (so far) does not: launching bucket all_reduces from backward hooks so communication hides under compute. The bucket structure here is built for it (reverse parameter order, persistent flat buffers) — it's the roadmap item with a pre-measured prize.
+
+   ![Grouped bar chart: torch DDP reaches 1.34x our DP's throughput on the tiny workload but only 1.08x on the large one](results/plots/overlap_gap.png)
+
+   The two workloads bracket the value of overlap: when a step is mostly communication (tiny), hiding the all_reduce is worth 34%; when compute grows (large), there's less comm *relative to* compute left to hide, and the same optimization is worth 8%. Overlap pays in proportion to how comm-bound you are.
 2. **TP is *slower than one GPU* on PCIe (0.73×).** Each transformer block costs 2 forward + 2 backward activation all_reduces on the critical path — 8 × ~4MB per step at this size. First-party evidence for why Megatron confines TP to NVLink islands.
 3. **ZeRO-2 is the fastest mode even on a single GPU.** Its sharded AdamW updates one flat contiguous tensor in a single elementwise pass, versus 38 per-tensor kernel launches for standard AdamW — the sharding design accidentally builds a fused optimizer.
 4. **ZeRO's memory win has a crossover.** At 1.86M params, its fixed flat comm buffers outweigh the sharded-state savings (65MB peak vs 54MB for naive DP); the byte accounting proves the sharding while the totals show the win only appears when model size dwarfs the buffers.
 
-### Collective microbenchmark (L4, 64MB messages, busbw per nccl-tests convention)
+### Collective microbenchmark (L4, busbw per nccl-tests convention)
+
+![Line chart: bus bandwidth vs message size for all_reduce, reduce_scatter, all_gather and broadcast on 4x L4; all ops climb steeply until ~4MB then plateau around 4-6 GB/s](results/plots/comm_busbw.png)
+
+**How to read it:** bus bandwidth normalizes each collective by its algorithmic traffic factor (ring all_reduce moves `2(n-1)/n` bytes per byte reduced), so every curve is directly comparable to the link's physical bandwidth. The steep left side is the latency-bound regime — a 0.25MB collective costs nearly the same wall time as a 4MB one, which is exactly why gradient *bucketing* (fewer, larger messages) exists. The plateau on the right is the PCIe fabric itself. At 64MB:
 
 | op | 2 GPU | 4 GPU |
 |---|---|---|
@@ -93,7 +105,8 @@ On any multi-GPU box:
 python scripts/verify_gpu.py                                   # same gates on NCCL
 python scripts/bench_comm.py  --device cuda --world-size 4     # collective microbench
 python scripts/bench_train.py --device cuda --world-size 4 --modes all
-python scripts/summarize.py   --dir results
+python scripts/summarize.py   --dir results                    # tables + summary.json
+python scripts/plot_results.py --summary results/summary.json  # the README charts
 ```
 
 With [Modal](https://modal.com) (how the committed results were produced — GPUs bill per second):

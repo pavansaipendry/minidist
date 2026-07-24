@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "timestamp": "2026-07-24T06:25:13",
+    "mode": "zero2",
+    "device": "cuda",
+    "backend": "nccl",
+    "world_size": 2,
+    "torch": "2.13.0+cu130",
+    "steps": 30,
+    "warmup": 5,
+    "global_batch_size": 8,
+    "seq_len": 32,
+    "tokens_per_step": 256
+  },
+  "per_rank": [
+    {
+      "rank": 0,
+      "mean_ms": 8.9189,
+      "p50_ms": 8.6022,
+      "p90_ms": 9.8458,
+      "max_ms": 10.442,
+      "peak_mem_mb": 65.44,
+      "zero_memory": {
+        "optimizer_state_bytes": 7434244,
+        "master_shard_bytes": 3717120,
+        "shard_numel": 929280,
+        "total_numel": 1858560,
+        "unsharded_optimizer_state_bytes": 14868480
+      }
+    },
+    {
+      "rank": 1,
+      "mean_ms": 8.9791,
+      "p50_ms": 8.638,
+      "p90_ms": 10.1264,
+      "max_ms": 10.5834,
+      "peak_mem_mb": 65.44,
+      "zero_memory": {
+        "optimizer_state_bytes": 7434244,
+        "master_shard_bytes": 3717120,
+        "shard_numel": 929280,
+        "total_numel": 1858560,
+        "unsharded_optimizer_state_bytes": 14868480
+      }
+    }
+  ],
+  "tokens_per_s": 28510.7
+}

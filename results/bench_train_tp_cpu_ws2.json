@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "timestamp": "2026-07-24T01:19:55",
+    "mode": "tp",
+    "device": "cpu",
+    "backend": "gloo",
+    "world_size": 2,
+    "torch": "2.13.0",
+    "steps": 6,
+    "warmup": 2,
+    "global_batch_size": 8,
+    "seq_len": 32,
+    "tokens_per_step": 256
+  },
+  "per_rank": [
+    {
+      "rank": 0,
+      "mean_ms": 16.9741,
+      "p50_ms": 16.953,
+      "p90_ms": 17.4835,
+      "max_ms": 19.7218
+    },
+    {
+      "rank": 1,
+      "mean_ms": 17.0095,
+      "p50_ms": 16.8893,
+      "p90_ms": 17.5448,
+      "max_ms": 19.8233
+    }
+  ],
+  "tokens_per_s": 15050.4
+}

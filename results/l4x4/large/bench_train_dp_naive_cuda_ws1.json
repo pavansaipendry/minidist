@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "timestamp": "2026-07-24T08:46:47",
+    "mode": "dp_naive",
+    "device": "cuda",
+    "backend": "nccl",
+    "world_size": 1,
+    "torch": "2.13.0+cu130",
+    "steps": 30,
+    "warmup": 5,
+    "global_batch_size": 64,
+    "seq_len": 64,
+    "tokens_per_step": 4096
+  },
+  "per_rank": [
+    {
+      "rank": 0,
+      "mean_ms": 9.54,
+      "p50_ms": 9.1749,
+      "p90_ms": 10.6842,
+      "max_ms": 13.4871,
+      "peak_mem_mb": 217.98
+    }
+  ],
+  "tokens_per_s": 429350.1
+}

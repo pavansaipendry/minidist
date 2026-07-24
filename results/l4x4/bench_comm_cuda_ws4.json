@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "timestamp": "2026-07-24T08:44:19",
+    "device": "cuda",
+    "backend": "nccl",
+    "world_size": 4,
+    "torch": "2.13.0+cu130",
+    "gpus": [
+      "NVIDIA L4",
+      "NVIDIA L4",
+      "NVIDIA L4",
+      "NVIDIA L4"
+    ],
+    "iters": 20,
+    "warmup": 5
+  },
+  "results": [
+    {
+      "op": "all_reduce",
+      "size_mb": 0.25,
+      "avg_ms": 0.1547,
+      "algbw_gbps": 1.616,
+      "busbw_gbps": 2.424
+    },
+    {
+      "op": "reduce_scatter",
+      "size_mb": 0.25,
+      "avg_ms": 0.0965,
+      "algbw_gbps": 2.59,
+      "busbw_gbps": 1.942
+    },
+    {
+      "op": "all_gather",
+      "size_mb": 0.25,
+      "avg_ms": 0.122,
+      "algbw_gbps": 2.05,
+      "busbw_gbps": 1.537
+    },
+    {
+      "op": "broadcast",
+      "size_mb": 0.25,
+      "avg_ms": 0.119,
+      "algbw_gbps": 2.101,
+      "busbw_gbps": 2.101
+    },
+    {
+      "op": "all_reduce",
+      "size_mb": 1.0,
+      "avg_ms": 0.3932,
+      "algbw_gbps": 2.543,
+      "busbw_gbps": 3.815
+    },
+    {
+      "op": "reduce_scatter",
+      "size_mb": 1.0,
+      "avg_ms": 0.257,
+      "algbw_gbps": 3.891,
+      "busbw_gbps": 2.918
+    },
+    {
+      "op": "all_gather",
+      "size_mb": 1.0,
+      "avg_ms": 0.2062,
+      "algbw_gbps": 4.85,
+      "busbw_gbps": 3.638
+    },
+    {
+      "op": "broadcast",
+      "size_mb": 1.0,
+      "avg_ms": 0.1985,
+      "algbw_gbps": 5.037,
+      "busbw_gbps": 5.037
+    },
+    {
+      "op": "all_reduce",
+      "size_mb": 4.0,
+      "avg_ms": 1.3846,
+      "algbw_gbps": 2.889,
+      "busbw_gbps": 4.333
+    },
+    {
+      "op": "reduce_scatter",
+      "size_mb": 4.0,
+      "avg_ms": 0.7644,
+      "algbw_gbps": 5.233,
+      "busbw_gbps": 3.925
+    },
+    {
+      "op": "all_gather",
+      "size_mb": 4.0,
+      "avg_ms": 0.7065,
+      "algbw_gbps": 5.661,
+      "busbw_gbps": 4.246
+    },
+    {
+      "op": "broadcast",
+      "size_mb": 4.0,
+      "avg_ms": 0.7177,
+      "algbw_gbps": 5.573,
+      "busbw_gbps": 5.573
+    },
+    {
+      "op": "all_reduce",
+      "size_mb": 16.0,
+      "avg_ms": 5.2998,
+      "algbw_gbps": 3.019,
+      "busbw_gbps": 4.528
+    },
+    {
+      "op": "reduce_scatter",
+      "size_mb": 16.0,
+      "avg_ms": 2.9742,
+      "algbw_gbps": 5.38,
+      "busbw_gbps": 4.035
+    },
+    {
+      "op": "all_gather",
+      "size_mb": 16.0,
+      "avg_ms": 2.7494,
+      "algbw_gbps": 5.819,
+      "busbw_gbps": 4.365
+    },
+    {
+      "op": "broadcast",
+      "size_mb": 16.0,
+      "avg_ms": 2.8087,
+      "algbw_gbps": 5.697,
+      "busbw_gbps": 5.697
+    },
+    {
+      "op": "all_reduce",
+      "size_mb": 64.0,
+      "avg_ms": 21.1122,
+      "algbw_gbps": 3.031,
+      "busbw_gbps": 4.547
+    },
+    {
+      "op": "reduce_scatter",
+      "size_mb": 64.0,
+      "avg_ms": 11.6889,
+      "algbw_gbps": 5.475,
+      "busbw_gbps": 4.106
+    },
+    {
+      "op": "all_gather",
+      "size_mb": 64.0,
+      "avg_ms": 10.9631,
+      "algbw_gbps": 5.838,
+      "busbw_gbps": 4.378
+    },
+    {
+      "op": "broadcast",
+      "size_mb": 64.0,
+      "avg_ms": 11.1436,
+      "algbw_gbps": 5.743,
+      "busbw_gbps": 5.743
+    }
+  ]
+}

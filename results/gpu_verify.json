@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-07-24T08:43:16",
+  "torch": "2.13.0+cu130",
+  "cuda": "13.0",
+  "nccl": "2.29.7",
+  "gpus": [
+    "NVIDIA L4",
+    "NVIDIA L4",
+    "NVIDIA L4",
+    "NVIDIA L4"
+  ],
+  "world_sizes": [
+    2,
+    4
+  ],
+  "pytest_exit_code": 0,
+  "passed": true,
+  "duration_s": 193.7
+}

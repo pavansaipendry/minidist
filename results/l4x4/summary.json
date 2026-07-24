@@ -1,0 +1,560 @@
+{
+  "train": {
+    "large": {
+      "ddp": {
+        "ws1": {
+          "mean_ms": 8.6668,
+          "tokens_per_s": 472608.1,
+          "peak_mem_mb": 225.41
+        },
+        "ws2": {
+          "mean_ms": 7.3738,
+          "tokens_per_s": 553603.3,
+          "peak_mem_mb": 140.17,
+          "speedup_vs_ws1": 1.171
+        },
+        "ws4": {
+          "mean_ms": 7.2681,
+          "tokens_per_s": 562877.0,
+          "peak_mem_mb": 97.61,
+          "speedup_vs_ws1": 1.191
+        }
+      },
+      "dp_bucketed": {
+        "ws1": {
+          "mean_ms": 10.277,
+          "tokens_per_s": 398559.9,
+          "peak_mem_mb": 225.41
+        },
+        "ws2": {
+          "mean_ms": 7.8721,
+          "tokens_per_s": 513135.3,
+          "peak_mem_mb": 139.34,
+          "speedup_vs_ws1": 1.287
+        },
+        "ws4": {
+          "mean_ms": 8.0783,
+          "tokens_per_s": 505329.6,
+          "peak_mem_mb": 98.75,
+          "speedup_vs_ws1": 1.268
+        }
+      },
+      "dp_naive": {
+        "ws1": {
+          "mean_ms": 9.54,
+          "tokens_per_s": 429350.1,
+          "peak_mem_mb": 217.98
+        },
+        "ws2": {
+          "mean_ms": 8.2345,
+          "tokens_per_s": 497419.4,
+          "peak_mem_mb": 131.91,
+          "speedup_vs_ws1": 1.159
+        },
+        "ws4": {
+          "mean_ms": 8.3995,
+          "tokens_per_s": 483680.5,
+          "peak_mem_mb": 91.32,
+          "speedup_vs_ws1": 1.127
+        }
+      },
+      "fsdp": {
+        "ws1": {
+          "mean_ms": 14.2992,
+          "tokens_per_s": 286449.6,
+          "peak_mem_mb": 219.6
+        },
+        "ws2": {
+          "mean_ms": 11.8523,
+          "tokens_per_s": 340813.6,
+          "peak_mem_mb": 124.41,
+          "speedup_vs_ws1": 1.19
+        },
+        "ws4": {
+          "mean_ms": 12.417,
+          "tokens_per_s": 329870.3,
+          "peak_mem_mb": 77.22,
+          "speedup_vs_ws1": 1.152
+        }
+      },
+      "tp": {
+        "ws1": {
+          "mean_ms": 9.2186,
+          "tokens_per_s": 444319.1,
+          "peak_mem_mb": 217.98
+        },
+        "ws2": {
+          "mean_ms": 12.7029,
+          "tokens_per_s": 322446.1,
+          "peak_mem_mb": 153.99,
+          "speedup_vs_ws1": 0.726
+        },
+        "ws4": {
+          "mean_ms": 13.033,
+          "tokens_per_s": 314279.1,
+          "peak_mem_mb": 123.84,
+          "speedup_vs_ws1": 0.707
+        }
+      },
+      "zero1": {
+        "ws1": {
+          "mean_ms": 11.3656,
+          "tokens_per_s": 360385.7,
+          "peak_mem_mb": 250.45
+        },
+        "ws2": {
+          "mean_ms": 9.947,
+          "tokens_per_s": 411782.4,
+          "peak_mem_mb": 144.17,
+          "speedup_vs_ws1": 1.143
+        },
+        "ws4": {
+          "mean_ms": 9.0848,
+          "tokens_per_s": 450863.0,
+          "peak_mem_mb": 92.45,
+          "speedup_vs_ws1": 1.251
+        }
+      },
+      "zero2": {
+        "ws1": {
+          "mean_ms": 8.1399,
+          "tokens_per_s": 503200.3,
+          "peak_mem_mb": 249.49
+        },
+        "ws2": {
+          "mean_ms": 6.7303,
+          "tokens_per_s": 607751.2,
+          "peak_mem_mb": 145.13,
+          "speedup_vs_ws1": 1.208
+        },
+        "ws4": {
+          "mean_ms": 7.117,
+          "tokens_per_s": 575240.5,
+          "peak_mem_mb": 94.05,
+          "speedup_vs_ws1": 1.143
+        }
+      }
+    },
+    "tiny": {
+      "ddp": {
+        "ws1": {
+          "mean_ms": 7.5977,
+          "tokens_per_s": 33694.4,
+          "peak_mem_mb": 64.6
+        },
+        "ws2": {
+          "mean_ms": 7.9386,
+          "tokens_per_s": 32247.5,
+          "peak_mem_mb": 61.73,
+          "speedup_vs_ws1": 0.957
+        },
+        "ws4": {
+          "mean_ms": 9.0774,
+          "tokens_per_s": 27649.1,
+          "peak_mem_mb": 61.69,
+          "speedup_vs_ws1": 0.821
+        }
+      },
+      "dp_bucketed": {
+        "ws1": {
+          "mean_ms": 9.2867,
+          "tokens_per_s": 27566.3,
+          "peak_mem_mb": 64.6
+        },
+        "ws2": {
+          "mean_ms": 10.4608,
+          "tokens_per_s": 24114.3,
+          "peak_mem_mb": 61.73,
+          "speedup_vs_ws1": 0.875
+        },
+        "ws4": {
+          "mean_ms": 11.1909,
+          "tokens_per_s": 22297.9,
+          "peak_mem_mb": 61.69,
+          "speedup_vs_ws1": 0.809
+        }
+      },
+      "dp_naive": {
+        "ws1": {
+          "mean_ms": 9.0129,
+          "tokens_per_s": 28403.7,
+          "peak_mem_mb": 57.17
+        },
+        "ws2": {
+          "mean_ms": 9.5041,
+          "tokens_per_s": 26838.0,
+          "peak_mem_mb": 54.29,
+          "speedup_vs_ws1": 0.945
+        },
+        "ws4": {
+          "mean_ms": 11.1473,
+          "tokens_per_s": 22782.5,
+          "peak_mem_mb": 54.26,
+          "speedup_vs_ws1": 0.802
+        }
+      },
+      "fsdp": {
+        "ws1": {
+          "mean_ms": 13.4093,
+          "tokens_per_s": 19091.2,
+          "peak_mem_mb": 60.39
+        },
+        "ws2": {
+          "mean_ms": 16.9253,
+          "tokens_per_s": 15071.6,
+          "peak_mem_mb": 44.88,
+          "speedup_vs_ws1": 0.789
+        },
+        "ws4": {
+          "mean_ms": 17.7441,
+          "tokens_per_s": 14199.9,
+          "peak_mem_mb": 36.51,
+          "speedup_vs_ws1": 0.744
+        }
+      },
+      "tp": {
+        "ws1": {
+          "mean_ms": 8.3935,
+          "tokens_per_s": 30499.8,
+          "peak_mem_mb": 57.17
+        },
+        "ws2": {
+          "mean_ms": 8.7726,
+          "tokens_per_s": 28540.5,
+          "peak_mem_mb": 41.28,
+          "speedup_vs_ws1": 0.936
+        },
+        "ws4": {
+          "mean_ms": 8.8066,
+          "tokens_per_s": 29005.2,
+          "peak_mem_mb": 33.33,
+          "speedup_vs_ws1": 0.951
+        }
+      },
+      "zero1": {
+        "ws1": {
+          "mean_ms": 10.1576,
+          "tokens_per_s": 25202.8,
+          "peak_mem_mb": 84.1
+        },
+        "ws2": {
+          "mean_ms": 10.7274,
+          "tokens_per_s": 23616.5,
+          "peak_mem_mb": 65.66,
+          "speedup_vs_ws1": 0.937
+        },
+        "ws4": {
+          "mean_ms": 12.1063,
+          "tokens_per_s": 21057.8,
+          "peak_mem_mb": 56.11,
+          "speedup_vs_ws1": 0.836
+        }
+      },
+      "zero2": {
+        "ws1": {
+          "mean_ms": 6.9137,
+          "tokens_per_s": 37027.9,
+          "peak_mem_mb": 84.1
+        },
+        "ws2": {
+          "mean_ms": 7.3748,
+          "tokens_per_s": 34712.8,
+          "peak_mem_mb": 65.44,
+          "speedup_vs_ws1": 0.937
+        },
+        "ws4": {
+          "mean_ms": 8.7685,
+          "tokens_per_s": 28626.7,
+          "peak_mem_mb": 56.86,
+          "speedup_vs_ws1": 0.773
+        }
+      }
+    }
+  },
+  "comm": {
+    "ws2": [
+      {
+        "op": "all_reduce",
+        "size_mb": 0.25,
+        "avg_ms": 0.1076,
+        "algbw_gbps": 2.323,
+        "busbw_gbps": 2.323
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 0.25,
+        "avg_ms": 0.0965,
+        "algbw_gbps": 2.592,
+        "busbw_gbps": 1.296
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 0.25,
+        "avg_ms": 0.0772,
+        "algbw_gbps": 3.239,
+        "busbw_gbps": 1.619
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 0.25,
+        "avg_ms": 0.117,
+        "algbw_gbps": 2.137,
+        "busbw_gbps": 2.137
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 1.0,
+        "avg_ms": 0.3036,
+        "algbw_gbps": 3.294,
+        "busbw_gbps": 3.294
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 1.0,
+        "avg_ms": 0.1806,
+        "algbw_gbps": 5.536,
+        "busbw_gbps": 2.768
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 1.0,
+        "avg_ms": 0.1824,
+        "algbw_gbps": 5.483,
+        "busbw_gbps": 2.741
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 1.0,
+        "avg_ms": 0.1189,
+        "algbw_gbps": 8.409,
+        "busbw_gbps": 8.409
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 4.0,
+        "avg_ms": 1.0823,
+        "algbw_gbps": 3.696,
+        "busbw_gbps": 3.696
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 4.0,
+        "avg_ms": 0.6505,
+        "algbw_gbps": 6.149,
+        "busbw_gbps": 3.074
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 4.0,
+        "avg_ms": 0.6508,
+        "algbw_gbps": 6.147,
+        "busbw_gbps": 3.073
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 4.0,
+        "avg_ms": 0.4055,
+        "algbw_gbps": 9.865,
+        "busbw_gbps": 9.865
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 16.0,
+        "avg_ms": 4.1235,
+        "algbw_gbps": 3.88,
+        "busbw_gbps": 3.88
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 16.0,
+        "avg_ms": 2.5114,
+        "algbw_gbps": 6.371,
+        "busbw_gbps": 3.185
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 16.0,
+        "avg_ms": 2.5426,
+        "algbw_gbps": 6.293,
+        "busbw_gbps": 3.146
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 16.0,
+        "avg_ms": 1.5532,
+        "algbw_gbps": 10.301,
+        "busbw_gbps": 10.301
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 64.0,
+        "avg_ms": 16.3104,
+        "algbw_gbps": 3.924,
+        "busbw_gbps": 3.924
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 64.0,
+        "avg_ms": 9.5565,
+        "algbw_gbps": 6.697,
+        "busbw_gbps": 3.348
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 64.0,
+        "avg_ms": 9.9322,
+        "algbw_gbps": 6.444,
+        "busbw_gbps": 3.222
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 64.0,
+        "avg_ms": 6.083,
+        "algbw_gbps": 10.521,
+        "busbw_gbps": 10.521
+      }
+    ],
+    "ws4": [
+      {
+        "op": "all_reduce",
+        "size_mb": 0.25,
+        "avg_ms": 0.1547,
+        "algbw_gbps": 1.616,
+        "busbw_gbps": 2.424
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 0.25,
+        "avg_ms": 0.0965,
+        "algbw_gbps": 2.59,
+        "busbw_gbps": 1.942
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 0.25,
+        "avg_ms": 0.122,
+        "algbw_gbps": 2.05,
+        "busbw_gbps": 1.537
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 0.25,
+        "avg_ms": 0.119,
+        "algbw_gbps": 2.101,
+        "busbw_gbps": 2.101
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 1.0,
+        "avg_ms": 0.3932,
+        "algbw_gbps": 2.543,
+        "busbw_gbps": 3.815
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 1.0,
+        "avg_ms": 0.257,
+        "algbw_gbps": 3.891,
+        "busbw_gbps": 2.918
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 1.0,
+        "avg_ms": 0.2062,
+        "algbw_gbps": 4.85,
+        "busbw_gbps": 3.638
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 1.0,
+        "avg_ms": 0.1985,
+        "algbw_gbps": 5.037,
+        "busbw_gbps": 5.037
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 4.0,
+        "avg_ms": 1.3846,
+        "algbw_gbps": 2.889,
+        "busbw_gbps": 4.333
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 4.0,
+        "avg_ms": 0.7644,
+        "algbw_gbps": 5.233,
+        "busbw_gbps": 3.925
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 4.0,
+        "avg_ms": 0.7065,
+        "algbw_gbps": 5.661,
+        "busbw_gbps": 4.246
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 4.0,
+        "avg_ms": 0.7177,
+        "algbw_gbps": 5.573,
+        "busbw_gbps": 5.573
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 16.0,
+        "avg_ms": 5.2998,
+        "algbw_gbps": 3.019,
+        "busbw_gbps": 4.528
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 16.0,
+        "avg_ms": 2.9742,
+        "algbw_gbps": 5.38,
+        "busbw_gbps": 4.035
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 16.0,
+        "avg_ms": 2.7494,
+        "algbw_gbps": 5.819,
+        "busbw_gbps": 4.365
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 16.0,
+        "avg_ms": 2.8087,
+        "algbw_gbps": 5.697,
+        "busbw_gbps": 5.697
+      },
+      {
+        "op": "all_reduce",
+        "size_mb": 64.0,
+        "avg_ms": 21.1122,
+        "algbw_gbps": 3.031,
+        "busbw_gbps": 4.547
+      },
+      {
+        "op": "reduce_scatter",
+        "size_mb": 64.0,
+        "avg_ms": 11.6889,
+        "algbw_gbps": 5.475,
+        "busbw_gbps": 4.106
+      },
+      {
+        "op": "all_gather",
+        "size_mb": 64.0,
+        "avg_ms": 10.9631,
+        "algbw_gbps": 5.838,
+        "busbw_gbps": 4.378
+      },
+      {
+        "op": "broadcast",
+        "size_mb": 64.0,
+        "avg_ms": 11.1436,
+        "algbw_gbps": 5.743,
+        "busbw_gbps": 5.743
+      }
+    ]
+  }
+}
